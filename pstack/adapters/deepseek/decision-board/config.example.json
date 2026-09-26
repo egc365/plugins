@@ -1,0 +1,41 @@
+{
+  "title": "Program decision board",
+  "refreshSeconds": 15,
+  "dshOrigin": "http://127.0.0.1:3080",
+  "orchStore": "/absolute/path/to/orchestrate",
+  "decisionsPath": "/absolute/path/to/decisions.tsv",
+  "legacyStatePath": "/absolute/path/to/legacy-state.json",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "title": "Outcome",
+      "detail": "Acceptance statement",
+      "status": "unverified",
+      "evidenceIds": [
+        "E-1"
+      ],
+      "cardPaths": [
+        "/absolute/path/to/card.md"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-1",
+      "label": "Artifact",
+      "sourcePath": "/absolute/path/to/artifact",
+      "scope": "Artifact existence only; acceptance is separate",
+      "status": "candidate"
+    }
+  ],
+  "workers": [
+    {
+      "role": "builder",
+      "identity": "Exact Roles roleId",
+      "sessionId": "session-id",
+      "card": "CARD-1",
+      "nextAction": "Review candidate",
+      "ledgerPath": "/absolute/path/to/worker.json"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "scripts": [
+    {
+      "slug": "decision-board-server",
+      "path": "server.ts",
+      "purpose": "Serve the local read-only board and bounded snapshot endpoint.",
+      "inputs": [
+        "deployment config",
+        "HTTP GET"
+      ],
+      "outputs": [
+        "board assets",
+        "snapshot JSON"
+      ],
+      "feature": "decision-board",
+      "pipeline": "serve-project-refresh"
+    },
+    {
+      "slug": "decision-board-projection",
+      "path": "projection.ts",
+      "purpose": "Validate inputs and project canonical store, Roles bindings, native sessions, decisions, and evidence.",
+      "inputs": [
+        "canonical TSV records",
+        "Roles ledgers",
+        "native session RPC",
+        "evidence paths"
+      ],
+      "outputs": [
+        "typed board snapshot",
+        "source health"
+      ],
+      "feature": "decision-board",
+      "pipeline": "serve-project-refresh"
+    },
+    {
+      "slug": "decision-board-types",
+      "path": "types.ts",
+      "purpose": "Define the explicit board source and projection record model.",
+      "inputs": [
+        "source contract"
+      ],
+      "outputs": [
+        "TypeScript types"
+      ],
+      "feature": "decision-board",
+      "pipeline": "projection-contract"
+    },
+    {
+      "slug": "decision-board-browser",
+      "path": "public/app.js",
+      "purpose": "Render the projected board and perform bounded automatic and manual refreshes.",
+      "inputs": [
+        "snapshot JSON",
+        "refresh action"
+      ],
+      "outputs": [
+        "visible board"
+      ],
+      "feature": "decision-board",
+      "pipeline": "browser-render"
+    },
+    {
+      "slug": "decision-board-tests",
+      "path": "projection.test.ts",
+      "purpose": "Verify config boundaries, terminal status projection, canonical TSV parsing, and acceptance gating.",
+      "inputs": [
+        "local fixtures",
+        "fake native RPC"
+      ],
+      "outputs": [
+        "Node test result"
+      ],
+      "feature": "decision-board",
+      "pipeline": "verification"
+    }
+  ]
+}
