@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "BENNY-FIRST-OWNER-REVIEW-01",
+  "title": "Consume existing review and inspect one independent gap",
+  "instructionFile": "FIRST_TASK.md",
+  "inputs": [
+    "/wiki/2026-09-24/https-claude-ai-code-session-012zpiqywbajqpmmw6rqb29g/work/cordis-goal/install-review-result.md",
+    "/wiki/2026-09-24/https-claude-ai-code-session-012zpiqywbajqpmmw6rqb29g/work/cordis-goal/studio-install-receipt.json",
+    "/wiki/2026-09-24/https-claude-ai-code-session-012zpiqywbajqpmmw6rqb29g/outputs/CARD-BENNY-ACTIVATE-01.md",
+    "/wiki/2026-09-24/https-claude-ai-code-session-012zpiqywbajqpmmw6rqb29g/outputs/CARD-CORDIS-PHASE-01.md",
+    "/wiki/2026-09-24/https-claude-ai-code-session-012zpiqywbajqpmmw6rqb29g/work/cordis-studio-s1/launcher/CORDIS-STUDIO-S1-EVIDENCE.md",
+    "/wiki/2026-09-24/https-claude-ai-code-session-012zpiqywbajqpmmw6rqb29g/work/cordis-goal/orchestrate",
+    "/apps/workspace/docs/DECISIONS.md"
+  ],
+  "deliverable": "Consumed Sol review plus one source-bound independent gap with ownership checks, exact installation steps, focused evidence, and a bounded next action.",
+  "observedTests": []
+}

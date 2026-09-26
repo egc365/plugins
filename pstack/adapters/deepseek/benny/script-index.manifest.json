@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "scripts": [
+    {
+      "slug": "benny-native-activation",
+      "path": "activate.mjs",
+      "purpose": "Verify and idempotently activate the reviewed Benny role and direct first task through native Roles.",
+      "inputs": [
+        "deployment config",
+        "preserved Benny files",
+        "native Roles endpoint"
+      ],
+      "outputs": [
+        "role binding",
+        "task preview",
+        "optional submission receipt"
+      ],
+      "feature": "benny-activation",
+      "pipeline": "verify-activate-submit"
+    },
+    {
+      "slug": "benny-activation-tests",
+      "path": "activate.test.mjs",
+      "purpose": "Verify config boundaries, upstream hashes, native discovery, one-role activation, preview, and explicit submission.",
+      "inputs": [
+        "local Benny assets",
+        "fake native Roles endpoint"
+      ],
+      "outputs": [
+        "Node test result"
+      ],
+      "feature": "benny-activation",
+      "pipeline": "verification"
+    }
+  ]
+}
