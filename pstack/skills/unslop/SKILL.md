@@ -1,17 +1,17 @@
 ---
 name: unslop
-description: Cut AI tells from any writing. Must always apply.
-disable-model-invocation: true
+description: Cut AI tells from any writing and write about 80% of the way to ASD-STE100 Simplified Technical English. Must always apply, including to every reply.
 ---
 
 # Unslop
 
-Edit text to remove AI patterns.
+Edit text to remove AI patterns. Every reply is a prose surface, so this skill applies to every reply.
 
 ## Process
 
 1. Scan for the patterns below.
 2. Rewrite. Preserve meaning, match intended tone.
+3. Before you send a reply, run steps 1 and 2 on the reply. The pstack `stop` hook lints each reply and asks for a corrected reply when it finds a mechanical violation.
 
 ## Patterns to detect and fix
 
@@ -65,3 +65,16 @@ Rule numbers are stable ids that other skills cite. A removed rule leaves a gap.
 31. **Prefer the plain word.** "utilize" becomes "use", "leverage" becomes "use", "facilitate" becomes "help", "numerous" becomes "many", "in the event that" becomes "if". The fancier synonym is rarely clearer.
 32. **Mannered prose.** Metaphor or flourish where a literal phrase exists: aphorisms ("wire it or delete it"), rhetorical fragments for effect, personified code ("the plan holds it"), figurative verbs ("rides along", "stands on"), stock framing phrases. "A dial worth turning" becomes "a parameter worth varying". Say what you mean. Rule 26 covers the metaphor nouns.
 33. **Over-compression.** Dropped articles, verbless fragments, symbol-speak, and abbreviations that make the reader decode instead of read. "Parser rejects bad date → exit 2, no write" becomes "The parser rejects a bad date, exits with code 2, and writes nothing." Write whole sentences with their articles and verbs, and spell out arrows and abbreviations.
+
+### Simplified Technical English
+
+The default for replies and prose is about 80% of the way to [ASD-STE100](https://www.asd-ste100.org/) Simplified Technical English (STE). Apply rules 34 to 41 in full. Do not check words against the STE dictionary. Rule 31 already prefers the plain word, and rule 11 already keeps one name for one thing. For strict STE (tool descriptions, error messages, inter-agent instructions), use the [asd-ste100 skill](https://github.com/egc365/asd-ste100-skill).
+
+34. **Sentence length caps.** Keep an instruction to 20 words or fewer and a description to 25 words or fewer. A longer sentence usually holds two ideas. Split it (rule 28).
+35. **Simple verb forms.** Use the imperative, simple present, simple past, simple future, infinitive, or past participle as an adjective. "We have received the report" becomes "We received the report". Keep a compound form only when it carries information the simple form cannot. "The job has completed" (its output is ready now) and "may have failed" (a hedge) stay. Confidence is content, so never upgrade a hedge to a fact.
+36. **One instruction per sentence.** "Open the file and read line 3, then check it" becomes three sentences. Use a numbered list for three or more steps.
+37. **Noun clusters of 3 words or fewer.** "the agent task queue priority handler" becomes "the handler that sets the priority of the task queue".
+38. **No semicolons.** STE Rule 8.1 bans the mark. Write two sentences.
+39. **No phrasal verbs.** "Spin up" becomes "start". "Reach out" becomes "contact". "Dive into" becomes "read". "Kick off" becomes "begin". The parts of a phrasal verb do not predict its meaning.
+40. **Condition first, command before risk.** "If the user gave no date, ask for the date." A warning starts with the command, then gives the risk. "Do not run `rm -rf` outside the project. It deletes files permanently."
+41. **One topic per paragraph, 6 sentences or fewer.** Use a vertical list for a sequence or for a group of items.
