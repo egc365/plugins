@@ -130,7 +130,7 @@ the full rules and playbooks live in [`skills/poteto-mode/SKILL.md`](./skills/po
 | [`/show-me-your-work`](./skills/show-me-your-work/SKILL.md) | you want a reviewable decision trail. logs decisions to a tsv you can commit. |
 | [`/create-verification-skill`](./skills/create-verification-skill/SKILL.md) | your project has no scripted way to prove app behavior. generates a project-local verify skill with a feature map, for any language or platform. |
 | [`/maintain-verification-skill`](./skills/maintain-verification-skill/SKILL.md) | your verify skill's feature map has drifted from the app. source wave + one live pass, at most one PR of proven corrections. |
-| [`/unslop`](./skills/unslop/SKILL.md) | you're cleaning up writing. removes AI tells. |
+| [`/unslop`](./skills/unslop/SKILL.md) | you're cleaning up writing. removes AI tells and writes about 80% of the way to ASD-STE100. applies to every reply by default (see [unslopped replies](#unslopped-replies)). |
 | [`/bro`](./skills/bro/SKILL.md) | you want the last message restated in plain human language, no jargon. |
 | [`/technical-writing`](./skills/technical-writing/SKILL.md) | layered doc standard (Diátaxis + Google developer style + STE + Global English) for docs, RFCs, readmes, PR descriptions, commit messages. |
 
@@ -182,6 +182,26 @@ automate-me:       /automate-me
 ```
 
 </details>
+
+## unslopped replies
+
+pstack applies [`unslop`](./skills/unslop/SKILL.md) to every reply, not only when you ask for it. two parts do this:
+
+1. [`rules/unslop-replies.mdc`](./rules/unslop-replies.mdc) is an always-applied rule. it tells the agent to apply unslop before it sends a reply, and it lists the core rules.
+2. [`hooks/unslop-hook.py`](./hooks/unslop-hook.py) runs on two hooks. `afterAgentResponse` saves the reply. `stop` lints it with the mechanical unslop rules and the [ASD-STE100 linter](./hooks/vendor/README.md) from [egc365/asd-ste100-skill](https://github.com/egc365/asd-ste100-skill). if it finds a violation, it sends a `followup_message`, and the agent sends one corrected reply. `loop_limit: 1` stops it there.
+
+cursor hooks cannot edit a reply before you see it. so the check runs after the reply, and a reply that breaks a rule is followed by its corrected version.
+
+the hook needs `python3` on your `PATH`. without it, or on any hook error, the hook does nothing and the reply goes through.
+
+| to | do this |
+|---|---|
+| turn the hook off for a project | create `.cursor/unslop/off` in the project |
+| turn the hook off everywhere | set `UNSLOP_HOOK=off` |
+| silence one rule | set `UNSLOP_DISABLE` to rule ids, for example `long-sentence,synonym-rotation` |
+| allow longer sentences | set `UNSLOP_MAX_WORDS`, for example `30` (default `25`) |
+
+the hook keeps the last reply of each conversation in `.cursor/unslop/` until the `stop` hook reads it. it writes a `.gitignore` there, so git ignores the folder.
 
 ## the `poteto-agent` and Comment Sicko subagents
 

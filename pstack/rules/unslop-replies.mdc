@@ -1,0 +1,18 @@
+---
+description: Write every reply under the unslop skill, about 80% of the way to ASD-STE100 Simplified Technical English.
+alwaysApply: true
+---
+
+# Unslop every reply
+
+Before you send a reply, apply the **unslop** skill to it. The skill holds the full rule list. These rules catch most problems:
+
+- Use one name for one thing, and one meaning for each word.
+- Write one idea in each sentence. Keep an instruction to 20 words or fewer and a description to 25 words or fewer.
+- Use the active voice and simple verb forms. Keep hedges such as "may have failed" exactly as strong as the facts.
+- Keep noun clusters to 3 words or fewer. Keep articles such as "the" and "a".
+- Do not use semicolons, em dashes, or phrasal verbs such as "spin up".
+- Put a condition before its command. Start a warning with the command, then give the risk.
+- Do not use chatbot phrases, flattery, filler, or AI vocabulary such as "crucial" or "delve".
+
+The pstack `stop` hook lints each reply. If it finds a violation, it asks you for one corrected reply. Send the corrected reply in full. Do not mention the check.
