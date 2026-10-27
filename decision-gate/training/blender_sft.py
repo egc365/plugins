@@ -21,7 +21,7 @@ def load_pairs(root='/home/egc365/dg-worktree/decision-gate'):
     from dataset.store import ExampleStore
     store = ExampleStore(Path(root) / 'data' / 'dataset')
     rows = [json.loads(l) for l in store.rows.read_text().splitlines() if l.strip()]
-    return [r for r in rows if r.get('source_store') == 'blender-headless-sft']
+    return [r for r in rows if 'blender' in str(r.get('source_store', ''))]
 
 def _prompt_of(row):
     return row['notes'].split('prompt=')[-1].split(' |')[0]
