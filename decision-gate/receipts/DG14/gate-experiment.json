@@ -1,0 +1,22 @@
+{
+ "dg": "DG14",
+ "verdict": "FAIL",
+ "ab": {
+  "gate_off": {
+   "completed": 2,
+   "p50_ms": 0.8
+  },
+  "gate_on": {
+   "completed": 0,
+   "p50_ms": 0.5,
+   "blocked": 3
+  }
+ },
+ "criteria": {
+  "C1_no_regression": false,
+  "C2_blocks_bad": true,
+  "C3_threshold_frozen": true
+ },
+ "acc": null,
+ "note": "baseline v1 FAIL recorded honestly: gate-on over-blocks; micrograd trainer saturates; torch-crosscheck path and log1p normalization are the named fixes. NOT enforcement-ready - exactly what the gate is for."
+}
