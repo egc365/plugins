@@ -1,0 +1,32 @@
+%% Blender agent job lifecycle - the reader is the owner.
+%% States label what the owner can observe.
+
+%% never: a worker edits a job it was not assigned
+%% never: a rejected version returns as a valid candidate
+%% never: a bot command executes without passing permission, freshness, idempotency
+%% never: task declared complete while a check fails
+
+[*] -> Assigned : owner posts job packet
+Assigned -> Probing : worker reads AGENTS.md + input.json
+Probing -> Probing : worker gathers app state (back-end bpy / front-end visual)
+Probing --> Blocked : required input missing; worker asks coordinator
+Blocked -> Probing : coordinator supplies input
+Probing -> Proposed : worker writes proposed action + hash
+Proposed -> GateChecked : decision service evaluates focused questions
+GateChecked -> GateChecked : classifier abstains; agent re-proposes with more state
+GateChecked -> Executing : policy accept AND permission AND freshness AND idempotency ok
+GateChecked -> Proposed : policy reject; agent revises proposal
+GateChecked -> Executing : policy abstain AND operator override present
+Executing -> Executing : tool runs; stdout/stderr stream
+Executing -> Verified : adapter probes resulting state; evaluator checks pass
+Executing -> Failed : tool errors OR evaluator check fails
+Failed -> Proposed : agent diagnoses from evidence and re-proposes (max 2 retries)
+Failed -> Escalated : 2 retries exhausted; report to owner
+Verified -> ReviewPending : evidence + receipts written
+ReviewPending -> Accepted : owner reviews; pass recorded
+ReviewPending -> Disposed : owner confirms bad version; trash per disposal rule
+Disposed -> [*]
+Accepted -> [*]
+
+Escalated -> Proposed : owner redirects with new constraint
+Escalated -> [*] : owner shelved the task
