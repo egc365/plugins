@@ -1,5 +1,16 @@
-{"domain":"mujoco","status":"live-verified","date":"2026-10-27","mujoco_ver":"3.17.0 (venv)",
-"model":"built-in damped pendulum XML (worldbody/capsule/hinge); no external assets",
-"live":["settle check vel<0.5 PASS on damped state","ultra-settle 1e-6 PASS after 150 frames","angle-near-0 tol.5 PASS","mid-swing negative control (ultra-settle) FALSE as designed"],
-"contract":"apply_action is the executor-entry; state is physics truth (qpos/qvel/ncon/time); outcome from state not step-rc",
-"limits":"single pendulum; no contact-heavy scene yet; renderer/GL untested headless-EGL"}
+{
+ "domain": "mujoco",
+ "status": "live-verified",
+ "date": "2026-10-27",
+ "mujoco_ver": "3.17.0 (venv)",
+ "model": "built-in damped pendulum XML (worldbody/capsule/hinge); no external assets",
+ "live": [
+  "settle check vel<0.5 PASS on damped state",
+  "ultra-settle 1e-6 PASS after 150 frames",
+  "angle-near-0 tol.5 PASS",
+  "mid-swing negative control (ultra-settle) FALSE as designed"
+ ],
+ "contract": "apply_action is the executor-entry; state is physics truth (qpos/qvel/ncon/time); outcome from state not step-rc",
+ "limits": "single pendulum; no contact-heavy scene yet; renderer/GL untested headless-EGL",
+ "discrimination_note": "initial 5-frame negative showed vel 0 (torque decay); 2-frame active-swing probe confirms nonzero vel and check FALSE as designed"
+}
