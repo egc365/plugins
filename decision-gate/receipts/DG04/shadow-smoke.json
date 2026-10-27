@@ -1,0 +1,1 @@
+{"lanes":"2 shadow cycles ingested to live trace app 8877 via /api/ingest; kind=decision_shadow tool=shadow_gate; queryable in snapshot; NO execution performed (shadow contract). Gate-vs-nogate comparison harness next.","status":"PASS (live ingest)","date":"2026-10-27"}
