@@ -1,0 +1,6 @@
+{"domain":"blender","status":"live-verified","date":"2026-10-27",
+"setup":"headless blender 4.0.2 -b created Cube+Torus, saved /tmp/dg_live.blend",
+"probe":"adapters/blender.py probe() parsed DGSTATE json: 5 objects incl Cube(8 verts implied),Torus",
+"eval":"TaskOutcome checks object_exists+verts_ok PASS; negative control (min_verts 100) correctly FAILS",
+"notes":"state schema blender-state/1; questions q_object_exists/q_count_matches/q_safe_op declared; exit-code never used as proof; artifacts+state are the evidence",
+"limits":"single-host GUI untested; driver/undo state not modeled; cad-level ops next"}

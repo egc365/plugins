@@ -1,0 +1,1 @@
+{"harness":"pilot/compare.py run_lane/summarize","live_result":{"gate_off":{"completed":2,"p50_ms":1.0},"gate_on":{"completed":2,"p50_ms":0.6,"blocked":1}},"tasks":3,"note":"identical tasks; gate-on blocked the doomed false-exit task and was cheaper on p50; enforcement decision deferred pending larger N per plan","suite":"34 passed"}
