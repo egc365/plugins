@@ -1,4 +1,6 @@
-"""Talk to the blender-bot: POST /chat {goal} -> executed, verified result.
+"""BOT-ONLY JSON API (DG04 pilot): agents POST goals; the response is JSON for machines. NOT a human chat page.
+
+Pipeline per message: retrieve best recipe (idf ngram over proven pairs) ->
 
 Pipeline per message: retrieve best recipe (idf ngram over proven pairs) ->
 headless-execute it in a fresh temp blend -> probe resulting scene ->
