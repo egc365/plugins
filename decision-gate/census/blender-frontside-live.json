@@ -1,0 +1,8 @@
+{"census":"front-side live measurement","date":"2026-10-27","blender":"4.0.2 X11 :1",
+"atspi_findings":{"app_nodes":21,"blender_window":"'(Unsaved) - Blender 4.0' under mutter-x11-frames",
+"visible_nodes_depth7":13,"roles":{"PANEL":8,"PUSH_BUTTON":3,"FRAME":1,"LABEL":1},
+"deep_walk":"fails/None - Blender 4.0 draws custom GL widgets; AT-SPI tree is shallow by design"},
+"implication":{"front_end_primary":"pixel+region grid over the 7 fixed areas (screenshot diffing), keyed to bpy.state mirror",
+"front_end_secondary":"a11y for window focus/title/visibility only",
+"computer_use_actions":"8 verbs from census v1 remain the action space; targets resolved visually"},
+"cross_check":"every visual region change must co-occur with a bpy.data delta - the paired-training-signal rule"}
