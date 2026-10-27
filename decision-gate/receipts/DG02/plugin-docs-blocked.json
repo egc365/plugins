@@ -1,0 +1,1 @@
+{"status":"BLOCKED-further-research","reason":"learn.chatgpt.com/build-plugins renders via JS; static fetch contains no manifest schema fields. Need interactive browse or official sample repo.","source":"https://learn.chatgpt.com/docs/build-plugins fetched 2026-10-27","impact":"chatgpt-cloud profile unverified; local profile unaffected per BUILD-PLAN DG02"}

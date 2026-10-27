@@ -1,0 +1,20 @@
+{
+  "name": "decision-gate-local",
+  "version": "0.1.0",
+  "description": "Local decision-gate: observe/propose/decide/execute/verify with evidence",
+  "entry": "decision-gate/dg.py",
+  "profiles": {
+    "local-app": {
+      "requires": ["trace_app:8877", "capture_proxy:8799"],
+      "permissions": ["trace.read", "trace.ingest", "shell.execute-scoped"],
+      "notes": "Full loop including executor; runs on the owner's host."
+    },
+    "chatgpt-cloud": {
+      "requires": ["remote MCP endpoint with scoped token"],
+      "permissions": ["status.read", "evaluation.read"],
+      "shell_hooks": false,
+      "notes": "Cloud host cannot touch localhost or run local hooks; read-only status+eval via authenticated MCP. NOT_VERIFIED against live ChatGPT package validation - SPA docs, see receipts/DG02/plugin-docs-blocked."
+    }
+  },
+  "schema": "dg1"
+}
