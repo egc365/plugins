@@ -1,0 +1,29 @@
+{
+  "census_rev": "blender-census/v1",
+  "date": "2026-10-27",
+  "source": "Blender-docs/blender_python_reference_4_0 (1621 html pages, 4.0 docs) + UI structure analysis",
+  "back_end": {
+    "bpy_ops_distinct_in_docs": 2378,
+    "modules": ["object","mesh","mesh","curve","surface","metaball","text","armature","pose","action","sculpt","paint","uv","view3d","node","material","render","workspace","scene","anim","outliner","preferences","image","file","wm"],
+    "note": "measured by grep across all doc pages; 413 in object+mesh alone"
+  },
+  "front_end": {
+    "fixed_ui_regions": ["topbar","workspace_tabs(12)","3d_viewport(header,toolbar,sidebarN,gizmos,overlays)","outliner","properties(12 cats x ~15 panels)","timeline","status_bar"],
+    "interaction_modes": ["Object","Edit","Sculpt","Vertex Paint","Weight Paint","Texture Paint","Particle Edit"],
+    "edit_mode_tools_approx": 30,
+    "sculpt_brushes_approx": 20,
+    "properties_panels_approx": 180,
+    "modal_operators": "unbounded; enum per operator",
+    "visual_state_signals": ["selection highlights","mode indicator","header breadcrumbs","viewport overlays","properties tab active state"],
+    "computer_use_actions": ["click widget","drag slider","type in field","select from dropdown","navigate tree","toggle checkbox","pie menu","search"]
+  },
+  "param_sizing": {
+    "classifier_input_concept": "goal + region + widget-path + state-delta, NOT pixels",
+    "back_end_head": "42M (existing sizing, 16 features, 8L/512d)",
+    "front_end_head_estimate_note": "vision tower only if pixel path chosen; text-path UI-state representation stays in the 42M envelope; measured later per gate rules"
+  },
+  "cross_cutting": {
+    "same_state_two_views": "a single bpy.data change surfaces BOTH as API delta AND visual region change - the pair is the training signal",
+    "capture": "every agent blender session through the gate logs both sides atomically"
+  }
+}
