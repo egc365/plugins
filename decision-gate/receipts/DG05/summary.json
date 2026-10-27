@@ -1,0 +1,5 @@
+{"dg":"DG05","scope":"training prep only; NO task-specific weights trained (gate honored)",
+"checks":{"finite_diff_vs_backward":"PASS","repeated_step_hygiene":"PASS","torch_crosscheck":"PASS (1.1431 vs 0.6616, differing init schemes - recorded, not parity)",
+"constant_baseline":"implemented","feature_schema":"16 fields, each with source/units/missing-policy/reason in docstring; vectorize roundtrip tested"},
+"data_policy":"labels from REAL reviewed receipts; synthetic fixtures labeled for plumbing tests only; splits by task/session lineage; holdout isolated from optimizer.",
+"micrograd_rev":"7bc720e951fe422b8f8814aa5aa1b64121d26b4c (upstream==fork)"}
