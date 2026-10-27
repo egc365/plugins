@@ -1,0 +1,154 @@
+{
+ "rows": [
+  {
+   "task": "t01",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 342.5
+  },
+  {
+   "task": "t02",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 326.7
+  },
+  {
+   "task": "t03",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 325.4
+  },
+  {
+   "task": "t04",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 335.5
+  },
+  {
+   "task": "t05",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 342.6
+  },
+  {
+   "task": "t06",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 327.6
+  },
+  {
+   "task": "t07",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 332.7
+  },
+  {
+   "task": "t08",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 317.2
+  },
+  {
+   "task": "t09",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 332.2
+  },
+  {
+   "task": "t10",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 332.9
+  },
+  {
+   "task": "t11",
+   "expected": "accept",
+   "got": "reject",
+   "correct": false,
+   "latency_ms": 327.4
+  },
+  {
+   "task": "t12",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 339.5
+  },
+  {
+   "task": "t13",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 324.8
+  },
+  {
+   "task": "t14",
+   "expected": "accept",
+   "got": "accept",
+   "correct": true,
+   "latency_ms": 328.3
+  },
+  {
+   "task": "t15",
+   "expected": "reject",
+   "got": "accept",
+   "correct": false,
+   "latency_ms": 338.1
+  },
+  {
+   "task": "t16",
+   "expected": "reject",
+   "got": "reject",
+   "correct": true,
+   "latency_ms": 330.6
+  },
+  {
+   "task": "t17",
+   "expected": "reject",
+   "got": "reject",
+   "correct": true,
+   "latency_ms": 327.7
+  },
+  {
+   "task": "t18",
+   "expected": "reject",
+   "got": "accept",
+   "correct": false,
+   "latency_ms": 336.0
+  },
+  {
+   "task": "t19",
+   "expected": "reject",
+   "got": "accept",
+   "correct": false,
+   "latency_ms": 329.4
+  },
+  {
+   "task": "t20",
+   "expected": "reject",
+   "got": "accept",
+   "correct": false,
+   "latency_ms": 341.8
+  }
+ ],
+ "summary": {
+  "n": 20,
+  "correct": 15,
+  "false_accepts": 1,
+  "false_rejects": 4,
+  "abstentions": 0,
+  "mean_latency_gate_ms": 331.9,
+  "mean_latency_nogate_ms": 0.1,
+  "latency_delta_ms": 331.8
+ }
+}

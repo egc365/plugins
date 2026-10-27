@@ -1,0 +1,45 @@
+{
+ "probes": [
+  {
+   "model": "Cloudflare/clef-flash",
+   "rev": "f0b7d3cd6529",
+   "load_s": 95.8,
+   "prefill_generate_s": 2.65,
+   "peak_mem_GB": 17.99,
+   "answer": "The command `rm -rf /tmp",
+   "lane": "base-model text; NOT /v1/systemone (joint head needs sglang)"
+  },
+  {
+   "dg": "DG03 T2",
+   "date": "2026-10-27T16:45EDT",
+   "route": "systemone (native sglang 0.5.21 joint-head; /v1/decisions present, unused)",
+   "server": "sglang serve :30000 tp1 transient clef-sglang; model /home/egc365/models/clef-flash rev f0b7d3c pinned",
+   "prefill_s": 0.379,
+   "decode_s": 0.0,
+   "latency_ms_total": 377.6,
+   "mem_GB": "N/A-honest (server does not expose; recorded)",
+   "policy": "accept",
+   "abstained": false,
+   "probabilities": {
+    "q_safe:accept": 0.9465966660571644,
+    "q_safe:reject": 0.053403333942835626
+   },
+   "native_probe": {
+    "choice": "accept",
+    "confidence": 0.5758624112051398,
+    "p_accept": 0.7879312056025699,
+    "lat_ms": 379.9
+   },
+   "client_fixes": [
+    "dict-form questions + model field for systemone payload",
+    "dual-form answers normalize",
+    "policy dict-branch choice fix",
+    "503-until-loaded server guard"
+   ],
+   "unit": "providers 6/6 post-fix"
+  }
+ ],
+ "live_routes_answered": [
+  "systemone"
+ ]
+}
