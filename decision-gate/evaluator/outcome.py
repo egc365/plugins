@@ -24,7 +24,10 @@ class TaskOutcome:
         for name, fn in self.checks.items():
             try:
                 res = fn(receipt, st)
-                ok, ev = bool(res[0]), res[1] if len(res) > 1 else None
+                if isinstance(res, tuple):
+                    ok, ev = bool(res[0]), (res[1] if len(res) > 1 else None)
+                else:
+                    ok, ev = bool(res), None
             except Exception as e:
                 ok, ev = False, {'checker-error': str(e)[:120]}
             results[name] = {'passed': ok, 'evidence': ev}
