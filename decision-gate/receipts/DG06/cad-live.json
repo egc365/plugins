@@ -1,0 +1,6 @@
+{"domain":"cad","status":"live-verified","date":"2026-10-27",
+"kernel":"cadquery + OCP 7.7 (pythonocc); nptyping upgraded for numpy2",
+"state_schema":"cad-state/1: per-solid volume_cm3, bbox xyz, counts; mass-property truth not exit codes",
+"live":["box 10x20x30mm => 6.0 cm3; positive range [5,7] PASS","negative [8,10] FALSE as designed","parametric edit z 30->40 => 8.0cm3, range [7,9] PASS"],
+"units":"cm3 everywhere; probe converts from mm3",
+"limits":"single solid; sketches/fillets/constraints next; no step/stl export roundtrip yet"}
