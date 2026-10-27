@@ -1,0 +1,17 @@
+{
+ "dg": "DG14v2-router",
+ "date": "2026-10-27",
+ "v2_changes": [
+  "discriminator-token-only NLL",
+  "1-shot prompt",
+  "length-normalized CE"
+ ],
+ "result": {
+  "n": 40,
+  "ngram": 0.825,
+  "d8v2": 0.075,
+  "beat": false
+ },
+ "verdict": "ngram retrieval REMAINS the production router; neural scoring revisits post-SFT (the plan's text-layer phase). Two variants measured; the bar is real.",
+ "note": "both variants committed; router v2 branch dg30-router-v2"
+}
