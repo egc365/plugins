@@ -1,0 +1,5 @@
+{"dg":"DG04b","scope":"deterministic executor + outcome evaluator v0",
+"executor_guards":["permission from registry (verdict cannot grant)","freshness state_version/hash match + expiry","idempotency original-receipt-on-retry"],
+"evaluator":"TaskOutcome checks task completion via resulting_state; exit-ok necessary not sufficient; label_rev outcome-eval/v0 immutable pattern",
+"unit":"34 passed total (6 executor + 5 evaluator new)",
+"live":"shadow pilot unchanged; enforcement gate awaits DG04 comparison harness per plan"}
