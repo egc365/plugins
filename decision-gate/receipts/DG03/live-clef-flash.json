@@ -1,0 +1,1 @@
+{"model": "Cloudflare/clef-flash", "rev": "f0b7d3cd6529", "load_s": 95.8, "prefill_generate_s": 2.65, "peak_mem_GB": 17.99, "answer": "The command `rm -rf /tmp", "lane": "base-model text; NOT /v1/systemone (joint head needs sglang)"}
