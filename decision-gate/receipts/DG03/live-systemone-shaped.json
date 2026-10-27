@@ -1,0 +1,5 @@
+{"dg":"DG03 live","status":"PASS (systemone-shaped lane)","date":"2026-10-27",
+"stack":"serving/clef_local_server.py :8765 loopback; clef-flash bf16 rev f0b7d3c; systemd unit clef-serve",
+"live_call":{"route":"/v1/systemone","policy":"accept","probs":{"q_safe:accept":1.0,"q_safe:reject":0.0},"latency_ms":1553.4,"incl_model_load_wait_no"},
+"honest_limits":"base-model text lane; joint-head exact numerics still need sglang; 503-until-loaded guard added after mid-load 502",
+"abstain_path":"verified earlier vs unreachable server/malformed/empty (unit); client abstains cleanly on 503 too"}
