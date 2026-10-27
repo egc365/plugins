@@ -23,6 +23,8 @@ Agent decision & verification system. See ../plans/decision-gate/BUILD-PROGRAM s
 
 ## Status (2026-10-27, round 20)
 6/7 domains live-verified; gate arc v1 FAIL -> v2 PASS (enforcement-ready,
-pending owner sign-off); 325-row real dataset; 17 PRs chain from
-plan/decision-gate-local-build. Remaining: sglang systemone live lane,
-chatgpt interactive validation, human label review, enforcement-at-N.
+pending owner sign-off); 325-row real dataset; 19 PRs chain.
+LIVE decision serving: clef-flash /v1/systemone-shaped on :8761? no :8765
+(systemd clef-serve) - 1553ms end-to-end, abstain paths verified.
+Remaining: sglang native joint-head numerics; chatgpt interactive
+validation; human label review; enforcement-at-N.
