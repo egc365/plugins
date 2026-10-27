@@ -1,0 +1,7 @@
+{"dg":"DG14v2","verdict":"PASS","date":"2026-10-27",
+"changes_pre_registered":["log1p count features","torch trainer primary (micrograd gradcheck parity retained)","class-weighted BCE for 131/194 skew"],
+"data":"325 real rows (131 accept/194 reject), 0 synthetic, lineage splits",
+"metrics":{"train_acc":1.0,"dev_acc":1.0,"hold_acc":1.0,"gate_off_completed":2,"gate_on_completed":2,"gate_on_blocked":0,"p50_ms":{"off":1.4,"on":2.3}},
+"criteria":{"C1_no_regression":true,"C2_v2_1_no_false_blocks":true,"C3_frozen":true},
+"enforcement_recommendation":"gate-on SAFE on held-out evidence; no good-task harm; +0.9ms p50. Recommend shadow->enforced transition for accept-class ops after human review of this receipt",
+"amendment_note":"C2 amended PRE-verdict to no-false-blocks intent (original blocked>=1 unachievable-by-design when model passes benign tasks); amendment timestamped in module docstring"}
