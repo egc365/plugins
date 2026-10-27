@@ -1,0 +1,11 @@
+{
+ "n": 40,
+ "ngram_instance_acc": 0.825,
+ "d8_router_instance_acc": 0.2,
+ "elapsed_s": 3,
+ "diagnosis": {
+  "ngram_baseline_strong": "82.5% - char-ngram on goal text; the 30-pair corpus has near-duplicate phrasings per task, making lexical match strong",
+  "d8_v1_weakness": "scored NLL of the FULL completion given a generic prompt; task discrimination diluted by shared boilerplate tokens. v2: score only discriminator tokens (object name), 1-shot structure, temperature on length-normalized NLL",
+  "verdict": "v1 recorded as baseline-beats-router; NOT evidence against the d8 text-layer - the scoring rule was naive. v2 gate: d8 must beat 82.5% on same split or the layer stays ngram"
+ }
+}
