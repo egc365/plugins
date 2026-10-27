@@ -15,19 +15,23 @@ from executor.executor import Executor  # noqa: E401
 from evaluator.outcome import TaskOutcome  # noqa: E402
 
 
-def run_lane(tasks, classifier, executor, evaluator):
+def run_lane(tasks, classifier, executor, evaluator, state_sync=None):
     rows = []
     for t in tasks:
         t0 = time.time()
         p = Proposal.create(t['task_id'], 'shell', t['goal'], {}, t['state'],
                             {'op': 'shell', 'cmd': t['cmd']})
+        if state_sync: state_sync(p)
         verdict = classifier(p) if classifier else {'policy_outcome': 'no-gate'}
         proceed = verdict.get('policy_outcome') in ('no-gate', 'accept')
         receipt = executor.execute(p) if proceed else {
             'refused': 'gate-reject', 'executed': False,
             'idempotency_key': p.idempotency_key}
         dt = (time.time() - t0) * 1000
-        outcome = evaluator.evaluate(receipt) if 'status' in receipt else {
+        expect = t.get('expect_substr')
+        single = TaskOutcome(t['task_id'], {'out': (lambda r, st: (expect is None or
+            (expect in ((st or {}).get('stdout') or '')), None))}) if expect else evaluator
+        outcome = single.evaluate(receipt) if 'status' in receipt else {
             'task_completed': False, 'execution_ok': False}
         rows.append({'task': t['task_id'], 'verdict': verdict.get('policy_outcome'),
                      'executed': receipt.get('status') == 'ok',

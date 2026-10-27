@@ -1,0 +1,12 @@
+{
+ "dg": "DG05b",
+ "scope": "versioned example store over REAL receipts",
+ "rows": 133,
+ "accept": 131,
+ "reject": 2,
+ "synthetic": 0,
+ "source": "trace_app events.sqlite3 native-hook rows; label=status-derived reviewer=auto; human review pending",
+ "splits": "lineage-hash 70/15/15 by task_id; holdout freeze immutable md5",
+ "tests": "4 new; suite 38",
+ "note": "class imbalance real; more failure-lane harvest next"
+}
