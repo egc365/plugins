@@ -12,5 +12,13 @@
  ],
  "contract": "apply_action is the executor-entry; state is physics truth (qpos/qvel/ncon/time); outcome from state not step-rc",
  "limits": "single pendulum; no contact-heavy scene yet; renderer/GL untested headless-EGL",
- "discrimination_note": "initial 5-frame negative showed vel 0 (torque decay); 2-frame active-swing probe confirms nonzero vel and check FALSE as designed"
+ "discrimination_note": "initial 5-frame negative showed vel 0 (torque decay); 2-frame active-swing probe confirms nonzero vel and check FALSE as designed",
+ "drop_test": {
+  "qpos0": 2.5,
+  "frames": 30,
+  "mid_swing_qvel": 0.5171,
+  "ultra_settle": false,
+  "settle_0.5": false,
+  "note": "gravity swing from raised init gives the discriminating state; all four checks now demonstrate true/false both ways"
+ }
 }
