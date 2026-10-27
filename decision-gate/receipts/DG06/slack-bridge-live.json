@@ -1,0 +1,5 @@
+{"domain":"slack-bridge","status":"live-verified (READ-ONLY dry-run)","date":"2026-10-27",
+"probe":"9 bot mailboxes; codex: 718 inbox / 26 acks; live frontmatter parsed (id/from/to/subject/ts)",
+"eval":"delivered-check PASS on real traffic; negative control FALSE as designed",
+"contract":" NOTHING sent by this adapter; sends remain in trace-app control lane w/ owner authorization",
+"limits":"ack matching is count-presence not per-message join (v2); subject substrings only"}
