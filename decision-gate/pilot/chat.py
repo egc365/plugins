@@ -35,11 +35,25 @@ def pairs():
             _PAIRS = load_pairs()
     return _PAIRS
 
+_RECIPES = None
+def recipes_reg():
+    global _RECIPES
+    if _RECIPES is None:
+        try:
+            _RECIPES = json.load(open('/home/egc365/dg-worktree/decision-gate/pilot/recipes.json'))
+        except Exception:
+            _RECIPES = {}
+    return _RECIPES
+
 def execute_goal(goal, workdir=None):
     m = best_recipe(goal, pairs())
     wd = workdir or tempfile.mkdtemp(prefix='chat-bbl-')
-    # extract the recipe's script from the stored notes
-    comp = m['notes'].split('completion=')[-1]
+    # canonical full script from registry; fall back to notes
+    reg = recipes_reg().get(m['task'])
+    if reg:
+        comp = reg
+    else:
+        comp = m['notes'].split('completion=')[-1]
     script = comp + f"\nimport bpy\nbpy.ops.wm.save_as_mainfile(filepath='{wd}/out.blend')\nprint('DGOK')"
     r = subprocess.run([B.BLENDER,'-b','--factory-startup','-noaudio','--python-expr',script],
                        capture_output=True,text=True,timeout=120,cwd=wd)
