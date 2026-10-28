@@ -56,9 +56,9 @@ def draw(goal_script, expect, store=None, task_id='draw', retries=2):
         wd=tempfile.mkdtemp(prefix='draw-')
         ok,st,err=execute_script(script,wd)
         entry={'attempt':attempt,'executed':ok,'scene':st}
-        exp=expect
-        if ok and expect:
-            good,details=verify(st,expect)
+        exp=expect or {}
+        if ok:
+            good,details=verify(st,exp)
             entry['verified']=good; entry['checks']=details
             if good:
                 png_ok,png=render(f'{wd}/out.blend',f'{wd}/render.png')
