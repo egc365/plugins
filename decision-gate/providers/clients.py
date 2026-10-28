@@ -1,17 +1,16 @@
 """Decision-model clients: Clef SystemOne and generic SGLang /v1/decisions.
 
-Primary sources (verified 2026-10-27):
-- https://docs.sglang.io/cookbook/autoregressive/Cloudflare/clef
-  Clef serves /v1/systemone ONLY (refuses /v1/decisions and chat); joint head
-  loaded from joint_head.safetensors + joint_head_config.json by SGLang.
-  Response per question: choice | noul | score + probabilities; confidence
-  per System One adapter formulas.
-- https://docs.sglang.io/docs/supported-models/decision_models
-  /v1/decisions works for ANY generation model with a Jinja chat template;
-  nightly SGLang required until release. SGLang extension, not OpenAI API.
+The installed server (sglang 0.5.21) owns the prompt wording. These clients
+send the trace and the typed questions. They do not render a judge prompt,
+parse generated text, or turn one probability into a gate decision.
 
-Both clients: timeout/malformed/unreachable => abstain Decision, never raise
-to the caller; record measured latency_ms on every outcome.
+/v1/decisions returns answers as a map keyed by question id, with
+probabilities and label_mass read from next-token scores. /v1/systemone
+returns the same map. A classifier checkpoint answers through /v1/systemone,
+not /v1/decisions.
+
+A timeout, a malformed body, or an unreachable server abstains. A missing
+validated threshold also abstains. Nothing here invents a probability.
 """
 from __future__ import annotations
 
@@ -38,6 +37,65 @@ def _post(url, payload, timeout_s, headers=None):
         return json.loads(resp.read())
 
 
+PROMPT_FORMAT_VERSION = 1
+
+
+def _finite(value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if isinstance(value, bool) or number != number or not 0.0 <= number <= 1.0:
+        return None
+    return number
+
+
+def _answer_map(resp):
+    answers = resp.get('answers') if isinstance(resp, dict) else None
+    if isinstance(answers, dict):
+        return answers
+    if isinstance(answers, list):
+        return {item.get('question_id', '?'): item
+                for item in answers if isinstance(item, dict)}
+    return {}
+
+
+def _read_answers(resp):
+    probabilities, questions = {}, {}
+    for qid, answer in _answer_map(resp).items():
+        if not isinstance(answer, dict):
+            continue
+        recorded = {}
+        for opt, raw in (answer.get('probabilities') or {}).items():
+            number = _finite(raw)
+            if number is None:
+                continue
+            probabilities[f'{qid}:{opt}'] = number
+            recorded[str(opt)] = number
+        questions[str(qid)] = {
+            'type': answer.get('type'),
+            'choice': answer.get('choice'),
+            'probabilities': recorded,
+            'label_mass': answer.get('label_mass'),
+        }
+    return probabilities, questions
+
+
+def _gate(questions, gate_question, threshold):
+    if gate_question is None or threshold is None:
+        return 'abstain', 'no validated threshold'
+    row = questions.get(gate_question) or {}
+    probs = row.get('probabilities') or {}
+    if not probs:
+        return 'abstain', 'gate question has no probabilities'
+    choice = row.get('choice')
+    if choice not in probs:
+        choice = max(probs, key=probs.get)
+    if choice in ('accept', 'reject') and probs.get(choice, 0) >= threshold:
+        return choice, None
+    return 'abstain', 'below validated threshold'
+
+
 def _abstain(reason, started, **fields):
     return Decision(
         proposal_hash=fields.get('proposal_hash', ''),
@@ -60,18 +118,25 @@ class ClefSystemOneClient:
         self.model_id, self.timeout_s = model_id, timeout_s
         self.headers = {'Authorization': f'Bearer {api_key}'} if api_key else {}
 
-    def decide(self, state, questions, proposal_hash='', schema_rev='dg1'):
+    def decide(self, state, questions, proposal_hash='', schema_rev='dg1',
+               gate_question=None, threshold=None):
         t0 = time.time()
-        # server expects dict-form {qid:{type:choice,criteria:{opt:desc}}};
-        # accept legacy list-form with id/options and synthesize criteria.
         qd = {}
-        for q in questions:
-            if isinstance(q, dict) and 'id' in q and 'criteria' not in q:
-                opts = q.get('options') or ['accept', 'reject']
-                qd[q['id']] = {'type': 'choice',
-                               'criteria': {o: f'{o} outcome' for o in opts}}
+        for q in questions if isinstance(questions, list) else []:
+            if not isinstance(q, dict):
+                continue
+            qid = q.get('id') or q.get('question_id')
+            if not isinstance(qid, str) or not qid:
+                continue
+            if isinstance(q.get('criteria'), dict):
+                posted = {'type': q.get('type') or 'choice', 'criteria': q['criteria']}
+                if isinstance(q.get('instructions'), str):
+                    posted['instructions'] = q['instructions']
             else:
-                qd[str(len(qd))] = q if isinstance(q, dict) else {}
+                opts = q.get('options') or ['accept', 'reject']
+                posted = {'type': q.get('type') or 'choice', 'instructions': qid,
+                          'criteria': {opt: None for opt in opts}}
+            qd[qid] = posted
         payload = {'model': self.model_id, 'state': state, 'questions': qd}
         try:
             resp = _post(f'{self.base_url}{self.route}', payload,
@@ -81,49 +146,17 @@ class ClefSystemOneClient:
             return _abstain(f'{type(e).__name__}: {e}', t0,
                             proposal_hash=proposal_hash, model_id=self.model_id,
                             route=self.route, schema_rev=schema_rev)
+        probabilities, per_question = _read_answers(resp)
+        outcome, reason = _gate(per_question, gate_question, threshold)
+        config = {'questions': per_question}
+        if outcome == 'abstain':
+            config['abstain_reason'] = reason
         return Decision(
             proposal_hash=proposal_hash, model_id=self.model_id,
-            runtime_rev=f'sglang+clef-joint-head', route=self.route,
-            schema_rev=schema_rev,
-            probabilities=self._normalize(resp),
-            policy_outcome=self._policy(resp),
-            threshold_config={}, evaluated_at=time.time())
-
-    @staticmethod
-    def _normalize(resp):
-        # answers: list-form {question_id,...} or dict-form {qid:{...}} (sglang native systemone)
-        out = {}
-        ans_map = resp.get('answers', {})
-        if isinstance(ans_map, dict):
-            for qid, a in ans_map.items():
-                if not isinstance(a, dict):
-                    continue
-                for opt, p in (a.get('probabilities') or {}).items():
-                    out[f'{qid}:{opt}'] = float(p)
-            return out
-        for ans in ans_map:
-            qid = ans.get('question_id', '?')
-            for opt, p in (ans.get('probabilities') or {}).items():
-                out[f'{qid}:{opt}'] = float(p)
-        return out
-
-    @staticmethod
-    def _policy(resp, threshold=0.5):
-        answers = resp.get('answers') or {}
-        if isinstance(answers, dict):
-            answers = [{'choice': (v or {}).get('choice'),
-                        'probabilities': (v or {}).get('probabilities') or {}}
-                       for v in answers.values()]
-        if not answers:
-            return 'abstain'
-        first = answers[0]
-        probs = first.get('probabilities') or {}
-        if not probs:
-            return 'abstain'
-        choice = first.get('choice')
-        if choice not in ('accept', 'reject'):
-            choice = max(probs, key=probs.get)
-        return choice if choice in ('accept', 'reject') and probs.get(choice, 0) >= threshold else 'reject'
+            runtime_rev='sglang+clef-joint-head', route=self.route,
+            schema_rev=schema_rev, probabilities=probabilities,
+            policy_outcome=outcome, threshold_config=config,
+            evaluated_at=time.time())
 
 
 class SglangDecisionClient:
@@ -138,27 +171,28 @@ class SglangDecisionClient:
         self.runtime_rev, self.timeout_s = runtime_rev, timeout_s
         self.headers = {'Authorization': f'Bearer {api_key}'} if api_key else {}
 
-    def decide(self, conversation, questions, proposal_hash='', schema_rev='dg1'):
+    def decide(self, conversation, questions, proposal_hash='', schema_rev='dg1',
+               gate_question=None, threshold=None):
         t0 = time.time()
         payload = {'model': self.model_id, 'input': conversation,
-                   'questions': questions}
+                   'questions': questions,
+                   'prompt_format_version': PROMPT_FORMAT_VERSION}
         try:
             resp = _post(f'{self.base_url}{self.route}', payload,
                          self.timeout_s, self.headers)
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError,
-                KeyError) as e:
+                KeyError, AttributeError, ValueError) as e:
             return _abstain(f'{type(e).__name__}: {e}', t0,
                             proposal_hash=proposal_hash, model_id=self.model_id,
                             route=self.route, schema_rev=schema_rev)
-        probs = {}
-        for ans in resp.get('answers', []):
-            qid = ans.get('question_id', '?')
-            for opt, p in (ans.get('probabilities') or {}).items():
-                probs[f'{qid}:{opt}'] = float(p)
-        outcome = 'abstain' if not probs else (
-            'accept' if max(probs.values()) >= 0.5 else 'reject')
+        probabilities, per_question = _read_answers(resp)
+        outcome, reason = _gate(per_question, gate_question, threshold)
+        config = {'questions': per_question,
+                  'prompt_format_version': resp.get('prompt_format_version')}
+        if outcome == 'abstain':
+            config['abstain_reason'] = reason
         return Decision(proposal_hash=proposal_hash, model_id=self.model_id,
-                        runtime_rev=self.runtime_rev or 'sglang-nightly',
+                        runtime_rev=self.runtime_rev or 'sglang-0.5.21',
                         route=self.route, schema_rev=schema_rev,
-                        probabilities=probs, policy_outcome=outcome,
-                        threshold_config={}, evaluated_at=time.time())
+                        probabilities=probabilities, policy_outcome=outcome,
+                        threshold_config=config, evaluated_at=time.time())
