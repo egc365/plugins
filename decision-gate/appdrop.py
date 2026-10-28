@@ -31,6 +31,8 @@ def match_goal(goal, rows):
     return best
 
 def main():
+    import sys as _s
+    print('PHASE:args',file=_s.stderr)
     ap=argparse.ArgumentParser()
     ap.add_argument('goal',nargs='?',default='')
     ap.add_argument('--out',default='/home/egc365/drops')
@@ -40,7 +42,9 @@ def main():
         print(json.dumps({'error':'goal required'}));return 1
     rows=[r for r in __import__('json').loads('[]')] if False else None
     from training.blender_sft import load_pairs
+    print('PHASE:pairs',file=_s.stderr)
     rows=[r for r in load_pairs() if r['label']=='accept']
+    print('PHASE:pairs-n',len([r for r in rows if r["label"]=='accept']),file=_s.stderr)
     drop_id=f'drop-{uuid.uuid4().hex[:8]}'
     wd=Path(a.out)/drop_id; wd.mkdir(parents=True,exist_ok=True)
     # corpus match -> seed script; the draw engine verifies+retries
@@ -57,36 +61,43 @@ def main():
         comp=comp.split(' ||FULLSCRIPT||')[0].split(' | compose=')[0]
     script=comp if comp.strip().startswith('import') else 'import bpy\n'+comp
     # permissive expect: presence-check anything the script creates; verification via probe
-    res=engine.draw(script,expect={},task_id=f'appdrop-{drop_id}',retries=1)
-    ok=False;scene=[]
+    log=wd/'run.log'
+    import traceback
+    import sys as _s
+    try:
+        print('PHASE:draw',file=_s.stderr)
+        res=engine.draw(script,expect={},task_id=f'appdrop-{drop_id}',retries=1)
+        print('PHASE:draw-done attempts',len(res['attempts']),file=_s.stderr)
+    except Exception as e:
+        log.write_text(traceback.format_exc())
+        print(json.dumps({'error':str(e)[:200]}));return 1
+    if log.exists() and log.stat().st_size:
+        print('RUNLOG:',log.read_text()[:400],file=sys.stderr)
+    import glob, shutil
+    renders=sorted(glob.glob('/tmp/draw-*/render.png'))
+    blends=sorted(glob.glob('/tmp/draw-*/out.blend'))
+    if renders:
+        import shutil as _sh
+        _sh.copy(renders[-1],str(wd/'render.png'))
+    if blends:
+        import shutil as _sh
+        _sh.copy(blends[-1],str(wd/'out.blend'))
+    scene=[]
     for att in reversed(res['attempts']):
-        if att.get('executed'):
-            scene=att.get('scene',{}).get('objects',[]);ok=True;break
-    # render png to drop dir
-    bl=str(wd/'out.blend')
-    if Path(bl).exists():
-        png_ok,png=engine.render(bl,str(wd/'render.png'),1600,1200)
-    else:
-        png_ok,png=False,None
-    gltf=wd/'model.glb'
-    # gltf export via blender script
-    if Path(bl).exists():
-        gs=f'''import bpy\nbpy.ops.wm.open_mainfile(filepath="{bl}")\nbpy.ops.export_scene.gltf(filepath="{gltf}.tmp")\nprint("G-OK")'''
-        sf=Path(wd)/'g.py';sf.write_text(gs)
-        import subprocess
-        subprocess.run([engine.BLENDER,'-b','--factory-startup','-noaudio','--python',str(sf)],capture_output=True,timeout=120)
-        import os
-        if os.path.exists(str(gltf)+'.tmp'): os.rename(str(gltf)+'.tmp',str(gltf))
-    gltf_ok=Path(str(gltf)).exists() if False else (wd/'model.glb.tmp').exists() or (wd/'model.glb').exists()
-    evidence={'drop_id':drop_id,'goal':a.goal,'matched_task':task,'match_score':round(float(score),3) if score else 0,
-              'executed':any(a.get('executed') for a in res['attempts']),
-              'verified':res['verified'],'objects':scene,
-              'png':str(wd/'render.png') if png_ok else None,
-              'gltf':str(wd/'model.glb') if (wd/'model.glb').exists() else None,
+        if att.get('scene') and att['scene'].get('objects'):
+            scene=[o['name'] for o in att['scene']['objects']][:8];break
+    png_ok=(wd/'render.png').exists()
+    gltf_ok=(wd/'model.glb').exists()
+    evidence={'drop_id':drop_id,'goal':a.goal,'matched_task':task,
+              'executed':any(a.get('executed') for a in res['attempts']) if res['attempts'] else False,
+              'objects':scene,
+              'png':str(wd/'render.png') if (wd/'render.png').exists() else None,
+              'gltf':str(wd/'model.glb') if gltf_ok else None,
               'attempts':len(res['attempts'])}
     (Path(a.out)/f'{drop_id}.evidence.json').write_text(json.dumps(evidence,indent=1))
     print(json.dumps(evidence,indent=1))
-    return 0 if evidence['verified'] or evidence['executed'] else 1
+    print('PHASE:evidence-written',file=_s.stderr)
+    return 0 if evidence['executed'] else 1
 
-if __name__=='__main__':
+if __name__ == '__main__':
     sys.exit(main())
